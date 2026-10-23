@@ -2,10 +2,6 @@
 using Moq;
 using Energy_Project.Models;
 using Energy_Project.Services;
-using Energy_Project.Services.Interfaces;
-using Moq;
-using Xunit.Sdk;
-using Microsoft.OpenApi.Any;
 
 namespace SmartHomeTests
 {

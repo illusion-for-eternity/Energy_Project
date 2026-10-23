@@ -2,9 +2,6 @@
 using Moq;
 using Energy_Project.Models;
 using Energy_Project.Services;
-using Energy_Project.Services.Interfaces;
-using Moq;
-using Xunit.Sdk;
 namespace SmartHomeTests
 {
     public class EnergyMonitorServiceTests
