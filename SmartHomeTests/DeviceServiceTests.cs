@@ -5,10 +5,21 @@ using Energy_Project.Services;
 
 namespace SmartHomeTests
 {
+    /// <summary>
+    /// Unit tests for DeviceService.
+    /// Tests device state changes, active device filtering,
+    /// ensures repository methods are called correctly,
+    /// and validates exception handling when a device is not found.
+    /// </summary>
     public class DeviceServiceTests
     {
         private readonly Mock<IDeviceRepository> _deviceRepo = new();
 
+        /// <summary>
+        /// Helper method to create a DeviceService with a mocked repository.
+        /// Reduces repeated setup code in each test.
+        /// </summary>
+        /// <returns>Instance of DeviceService using the mocked repository</returns>
         private DeviceService CreateService()
         {
             return new DeviceService(_deviceRepo.Object);
@@ -16,6 +27,13 @@ namespace SmartHomeTests
 
         #region ToggleDeviceMethod
 
+        /// <summary>
+        /// Parameterized test for ToggleDevice method.
+        /// Each InlineData provides a device ID, a requested state, and the expected result.
+        /// </summary>
+        /// <param name="deviceId">ID of the device to toggle</param>
+        /// <param name="deviceTurnOnSetting">Requested device state</param>
+        /// <param name="expected">Expected boolean result</param>
         [Theory]
         [InlineData(1, true, true)]
         [InlineData(1, false, false)]
@@ -34,6 +52,9 @@ namespace SmartHomeTests
             Assert.Equal(expected, result);
         }
 
+        /// <summary>
+        /// Test: Turning on a device with default properties should return true.
+        /// </summary>
         [Fact]
         public void ToggleDevice_DeviceWithDefaultProperties_ReturnsIsOnSetToTrue()
         {
@@ -52,6 +73,9 @@ namespace SmartHomeTests
             Assert.Equal(TURN_ON, result);
         }
 
+        /// <summary>
+        /// Test: Turning on an inactive device should return a state different from its initial state.
+        /// </summary>
         [Fact]
         public void ToggleDevice_DeviceToOnSetToTrue_ReturnsDifferentIsOnState()
         {
@@ -71,6 +95,9 @@ namespace SmartHomeTests
             Assert.NotEqual(EXPECTED, result);
         }
 
+        /// <summary>
+        /// Test: Toggling a non-existing device should throw ArgumentException.
+        /// </summary>
         [Fact]
         public void ToggleDevice_InvalidIdDevice_ThrowsArgumentException()
         {
@@ -86,6 +113,9 @@ namespace SmartHomeTests
             Assert.Throws<ArgumentException>(() => service.ToggleDevice(DEVICE_ID, TURN_ON));
         }
 
+        /// <summary>
+        /// Test: Toggling an existing device should call repository.Update() exactly once.
+        /// </summary>
         [Fact]
         public void ToggleDevice_ValidIdDevice_CallsRepositoryUpdateOnce()
         {
@@ -104,6 +134,9 @@ namespace SmartHomeTests
             _deviceRepo.Verify(r => r.Update(It.IsAny<Device>()), Times.Once);
         }
 
+        /// <summary>
+        /// Test: Toggling a non-existing device should never call repository.Update().
+        /// </summary>
         [Fact]
         public void ToggleDevice_InvalidIdDevice_CallsRepositoryUpdateNever()
         {
@@ -122,6 +155,9 @@ namespace SmartHomeTests
             _deviceRepo.Verify(r => r.Update(It.IsAny<Device>()), Times.Never);
         }
 
+        /// <summary>
+        /// Test: Toggling a valid device should update the correct device state in the repository.
+        /// </summary>
         [Fact]
         public void ToggleDevice_ValidDevice_UpdatesCorrectDeviceState()
         {
@@ -144,6 +180,9 @@ namespace SmartHomeTests
 
         #region GetActiveDevicesMethod
 
+        /// <summary>
+        /// Test: Retrieving active devices should return the expected number of devices.
+        /// </summary>
         [Fact]
         public void GetActiveDevices_ExistingDevicesCollection_ReturnsExpectedCountOfElements()
         {
@@ -167,6 +206,9 @@ namespace SmartHomeTests
             Assert.True(EXPECTED_DEVICE_COUNT == actualCount);
         }
 
+        /// <summary>
+        /// Test: Retrieving active devices should return no more than one device when only one is active.
+        /// </summary>
         [Fact]
         public void GetActiveDevices_OneActiveDevice_ReturnsCountNotGreaterThanOne()
         {
@@ -190,6 +232,9 @@ namespace SmartHomeTests
             Assert.False(actualCount > MAXIMUM_DEVICE_COUNT);
         }
 
+        /// <summary>
+        /// Test: Retrieving active devices should return a collection containing the expected device.
+        /// </summary>
         [Fact]
         public void GetActiveDevices_CollectionWithActiveDevices_ReturnsExpectedCollection()
         {
@@ -212,6 +257,9 @@ namespace SmartHomeTests
             Assert.Contains(expectedDevice, result);
         }
 
+        /// <summary>
+        /// Test: Retrieving active devices from an empty repository should return an empty collection.
+        /// </summary>
         [Fact]
         public void GetActiveDevices_EmptyDevicesCollection_ReturnsEmptyCollection()
         {
@@ -228,6 +276,9 @@ namespace SmartHomeTests
             Assert.Empty(result);
         }
 
+        /// <summary>
+        /// Test: Retrieving active devices should return a non-empty collection when an active device exists.
+        /// </summary>
         [Fact]
         public void GetActiveDevices_ActiveDeviceExists_ReturnsNotEmptyCollection()
         {
@@ -247,6 +298,9 @@ namespace SmartHomeTests
             Assert.NotEmpty(result);
         }
 
+        /// <summary>
+        /// Test: Retrieving active devices should call repository.GetAll() exactly once.
+        /// </summary>
         [Fact]
         public void GetActiveDevices_CallsRepositoryGetAllOnce()
         {

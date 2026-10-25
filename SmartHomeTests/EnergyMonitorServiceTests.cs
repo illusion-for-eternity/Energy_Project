@@ -4,12 +4,23 @@ using Energy_Project.Models;
 using Energy_Project.Services;
 namespace SmartHomeTests
 {
+    /// <summary>
+    /// Unit tests for EnergyMonitorService.
+    /// Tests current energy usage calculations, overload detection,
+    /// ensures repository and notification methods are called correctly,
+    /// and verifies energy limit updates.
+    /// </summary>
     public class EnergyMonitorServiceTests
     {
         private readonly Mock<IDeviceRepository> _deviceRepo = new();
         private readonly Mock<IEnergyPlanRepository> _planRepo = new();
         private readonly Mock<INotificationService> _notify = new();
 
+        /// <summary>
+        /// Helper method to create an EnergyMonitorService with mocked dependencies.
+        /// Reduces repeated setup code in each test.
+        /// </summary>
+        /// <returns>Instance of EnergyMonitorService using mocked repositories and notification service</returns>
         public EnergyMonitorService CreateService()
         {
             return new EnergyMonitorService(_deviceRepo.Object, _planRepo.Object, _notify.Object);
@@ -17,6 +28,9 @@ namespace SmartHomeTests
 
         #region CalculateCurrentUsageKwh
 
+        /// <summary>
+        /// Test: Calculating energy usage for an active device should return the expected result.
+        /// </summary>
         [Fact]
         public void CalculateCurrentUsageKwh_ListWithActiveDevice_ReturnResultEqualToExpected()
         {
@@ -37,6 +51,9 @@ namespace SmartHomeTests
             Assert.Equal(EXPECTED_USAGE, actual);
         }
 
+        /// <summary>
+        /// Test: Calculating energy usage for an inactive device should not return the specified non-zero value.
+        /// </summary>
         [Fact]
         public void CalculateCurrentUsageKwh_ListWithUnactiveDevice_ReturnResultNotEqualToExpected()
         {
@@ -57,6 +74,9 @@ namespace SmartHomeTests
             Assert.NotEqual(ABNORMAL_USAGE, actual);
         }
 
+        /// <summary>
+        /// Test: Calculating energy usage for an empty device list should return zero.
+        /// </summary>
         [Fact]
         public void CalculateCurrentUsageKwh_EmptyDevicesList_ReturnsExpectedResult()
         {
@@ -74,7 +94,10 @@ namespace SmartHomeTests
             Assert.True(EXPECTED_USAGE == actual);
         }
 
-        [Fact] //Assert.False(condition)
+        /// <summary>
+        /// Test: Calculating energy usage for inactive devices should not return a value greater than zero.
+        /// </summary>
+        [Fact]
         public void CalculateCurrentUsageKwh_DevicesList_ReturnsNotExpectedResult()
         {
             // Arrange
@@ -95,7 +118,10 @@ namespace SmartHomeTests
             Assert.False(actual > MINIMUM_USAGE);
         }
 
-        [Fact] //Verify()
+        /// <summary>
+        /// Test: Calculating current energy usage should call repository.GetAll() exactly once.
+        /// </summary>
+        [Fact]
         public void CalculateCurrentUsageKwh_CallsRepositoryGetAllOnce()
         {
             // Arrange
@@ -115,6 +141,9 @@ namespace SmartHomeTests
 
         #region CheckForOverload
 
+        /// <summary>
+        /// Test: Detecting an overload should call notificationService.SendAlert() exactly once.
+        /// </summary>
         [Fact]
         public void CheckForOverload_OverloadPresent_CallsRepositoryNotifyOnce()
         {
@@ -138,6 +167,9 @@ namespace SmartHomeTests
             _notify.Verify(n => n.SendAlert(It.IsAny<string>()), Times.Once);
         }
 
+        /// <summary>
+        /// Test: Checking energy usage below the limit should never call notificationService.SendAlert().
+        /// </summary>
         [Fact]
         public void CheckForOverload_OverloadNotPresent_NeverCallsRepositoryNotify()
         {
@@ -161,6 +193,9 @@ namespace SmartHomeTests
             _notify.Verify(n => n.SendAlert(It.IsAny<string>()), Times.Never);
         }
 
+        /// <summary>
+        /// Test: Checking energy usage equal to the limit should never call notificationService.SendAlert().
+        /// </summary>
         [Fact]
         public void CheckForOverload_OverloadEqualToPowerUsage_NeverCallsRepositoryNotify()
         {
@@ -188,6 +223,12 @@ namespace SmartHomeTests
 
         #region UpdateEnergyLimit
 
+        /// <summary>
+        /// Parameterized test for UpdateEnergyLimit method.
+        /// Each InlineData provides a new energy limit to verify that repository.UpdatePlan()
+        /// is called exactly once.
+        /// </summary>
+        /// <param name="newLimit">New energy limit to set</param>
         [Theory]
         [InlineData(0)]
         [InlineData(999)]
@@ -208,6 +249,9 @@ namespace SmartHomeTests
             _planRepo.Verify(u => u.UpdatePlan(It.IsAny<EnergyPlan>()), Times.Once);
         }
 
+        /// <summary>
+        /// Test: Updating an energy plan with the same limit should call repository.UpdatePlan() exactly once.
+        /// </summary>
         [Fact]
         public void UpdateEnergyLimit_EnergyPlanWithTheSameDailyLimitKwh_CallsRepositoryUpdatePlanOnce()
         {
@@ -227,6 +271,9 @@ namespace SmartHomeTests
             _planRepo.Verify(u => u.UpdatePlan(It.Is<EnergyPlan>(e => e.DailyLimitKwh == DAILY_LIMIT)), Times.Once);
         }
 
+        /// <summary>
+        /// Test: Updating an energy plan with default properties should call repository.UpdatePlan() exactly once.
+        /// </summary>
         [Fact]
         public void UpdateEnergyLimit_EnergyPlanWithDefaultProperties_CallsRepositoryUpdatePlanOnce()
         {
@@ -245,6 +292,9 @@ namespace SmartHomeTests
             _planRepo.Verify(u => u.UpdatePlan(It.IsAny<EnergyPlan>()), Times.Exactly(1));
         }
 
+        /// <summary>
+        /// Test: Updating an energy limit should pass a plan with the expected new limit to repository.UpdatePlan().
+        /// </summary>
         [Fact]
         public void UpdateEnergyLimit_NewLimit_UpdatesPlanWithExpectedLimit()
         {
