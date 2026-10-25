@@ -18,15 +18,14 @@ namespace SmartHomeTests
         #region CalculateCurrentUsageKwh
 
         [Fact]
-        public void CalculateCurrentUsageKwh_DevicesList_ReturnResultEqualToExpected()
+        public void CalculateCurrentUsageKwh_ListWithActiveDevice_ReturnResultEqualToExpected()
         {
             // Arrange
             var service = CreateService();
-            const double EXPECTED_USAGE = 0.003;
+            const double EXPECTED_USAGE = 0.001;
             var fakeDevicesList = new List<Device>()
             {
-                new Device() { IsOn = true, PowerUsageWatts = 1 },
-                new Device() { IsOn = true, PowerUsageWatts = 2 }
+                new Device() { IsOn = true, PowerUsageWatts = 1 }
             };
 
             _deviceRepo.Setup(g => g.GetAll()).Returns(fakeDevicesList);
@@ -39,14 +38,14 @@ namespace SmartHomeTests
         }
 
         [Fact]
-        public void CalculateCurrentUsageKwh_DevicesList_ReturnResultNotEqualToExpected()
+        public void CalculateCurrentUsageKwh_ListWithUnactiveDevice_ReturnResultNotEqualToExpected()
         {
             // Arrange
             var service = CreateService();
-            const double UNEXPECTED_USAGE = 0;
+            const double ABNORMAL_USAGE = 0.001;
             var fakeDevicesList = new List<Device>()
             {
-                new Device() { IsOn = true, PowerUsageWatts = 1 }
+                new Device() { IsOn = false, PowerUsageWatts = 1 }
             };
 
             _deviceRepo.Setup(g => g.GetAll()).Returns(fakeDevicesList);
@@ -55,7 +54,7 @@ namespace SmartHomeTests
             var actual = service.CalculateCurrentUsageKwh();
 
             // Assert
-            Assert.NotEqual(UNEXPECTED_USAGE, actual);
+            Assert.NotEqual(ABNORMAL_USAGE, actual);
         }
 
         [Fact]
@@ -80,11 +79,11 @@ namespace SmartHomeTests
         {
             // Arrange
             var service = CreateService();
-            const double MINIMUM_POSITIVE_USAGE = 0;
+            const double MINIMUM_USAGE = 0;
             var fakeDevicesList = new List<Device>()
             {
-                new Device() { IsOn = false, PowerUsageWatts = 1000 },
-                new Device() { IsOn = false, PowerUsageWatts = 0 }
+                new Device() { IsOn = false, PowerUsageWatts = 10 },
+                new Device() { IsOn = false, PowerUsageWatts = 20 }
             };
 
             _deviceRepo.Setup(g => g.GetAll()).Returns(fakeDevicesList);
@@ -93,7 +92,7 @@ namespace SmartHomeTests
             var actual = service.CalculateCurrentUsageKwh();
 
             // Assert
-            Assert.False(actual > MINIMUM_POSITIVE_USAGE);
+            Assert.False(actual > MINIMUM_USAGE);
         }
 
         [Fact] //Verify()

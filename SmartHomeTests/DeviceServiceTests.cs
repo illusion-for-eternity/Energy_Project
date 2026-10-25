@@ -8,8 +8,6 @@ namespace SmartHomeTests
     public class DeviceServiceTests
     {
         private readonly Mock<IDeviceRepository> _deviceRepo = new();
-        private readonly Mock<IEnergyPlanRepository> _planRepo = new();
-        private readonly Mock<INotificationService> _notify = new();
 
         private DeviceService CreateService()
         {
@@ -62,7 +60,7 @@ namespace SmartHomeTests
             const int DEVICE_ID = 1;
             const bool TURN_ON = true;
             const bool EXPECTED = !TURN_ON;
-            var fakeDevice = new Device() { IsOn = false };
+            var fakeDevice = new Device() { Id = DEVICE_ID, Name = "LED Lamp", PowerUsageWatts = 20, IsOn = false };
 
             _deviceRepo.Setup(g => g.GetById(It.IsAny<int>())).Returns(fakeDevice);
 
@@ -131,7 +129,7 @@ namespace SmartHomeTests
             var service = CreateService();
             const int DEVICE_ID = 9;
             const bool TURN_ON = true;
-            var device = new Device { Id = DEVICE_ID, IsOn = false };
+            var device = new Device { Id = DEVICE_ID, Name = "LED Lamp", PowerUsageWatts = 20, IsOn = false };
 
             _deviceRepo.Setup(r => r.GetById(DEVICE_ID)).Returns(device);
 
@@ -193,7 +191,7 @@ namespace SmartHomeTests
         }
 
         [Fact]
-        public void GetActiveDevices_CollectionWithDevices_ReturnsExpectedCollection()
+        public void GetActiveDevices_CollectionWithActiveDevices_ReturnsExpectedCollection()
         {
             // Arrange
             var service = CreateService();
@@ -237,7 +235,7 @@ namespace SmartHomeTests
             var service = CreateService();
             var fakeDevicesList = new List<Device>()
             {
-                new Device() { IsOn = true }
+                new Device() {IsOn = true }
             };
 
             _deviceRepo.Setup(g => g.GetAll()).Returns(fakeDevicesList);
