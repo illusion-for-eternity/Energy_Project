@@ -21,7 +21,7 @@ namespace SmartHomeTests
         /// Reduces repeated setup code in each test.
         /// </summary>
         /// <returns>Instance of EnergyMonitorService using mocked repositories and notification service</returns>
-        public EnergyMonitorService CreateService()
+        private EnergyMonitorService CreateService()
         {
             return new EnergyMonitorService(_deviceRepo.Object, _planRepo.Object, _notify.Object);
         }
