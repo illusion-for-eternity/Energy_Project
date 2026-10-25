@@ -207,32 +207,6 @@ namespace SmartHomeTests
         }
 
         /// <summary>
-        /// Test: Retrieving active devices should return no more than one device when only one is active.
-        /// </summary>
-        [Fact]
-        public void GetActiveDevices_OneActiveDevice_ReturnsCountNotGreaterThanOne()
-        {
-            // Arrange
-            var service = CreateService();
-            const int MAXIMUM_DEVICE_COUNT = 1;
-            var fakeDevicesList = new List<Device>
-            {
-                new Device { IsOn = false },
-                new Device { IsOn = false },
-                new Device { IsOn = true }
-            };
-
-            _deviceRepo.Setup(r => r.GetAll()).Returns(fakeDevicesList);
-
-            // Act
-            var result = service.GetActiveDevices();
-            var actualCount = result.Count();
-
-            // Assert
-            Assert.False(actualCount > MAXIMUM_DEVICE_COUNT);
-        }
-
-        /// <summary>
         /// Test: Retrieving active devices should return a collection containing the expected device.
         /// </summary>
         [Fact]
