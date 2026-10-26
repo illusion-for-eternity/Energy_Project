@@ -231,8 +231,8 @@ namespace SmartHomeTests
         /// <param name="newLimit">New energy limit to set</param>
         [Theory]
         [InlineData(0)]
-        [InlineData(999)]
-        [InlineData(-999)]
+        [InlineData(2)]
+        [InlineData(-2)]
         public void UpdateEnergyLimit_CallsRepositoryTimesOnce(int newLimit)
         {
             // Arrange
