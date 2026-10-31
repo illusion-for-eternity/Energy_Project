@@ -145,7 +145,7 @@ namespace SmartHomeTests
         /// Test: Detecting an overload should call notificationService.SendAlert() exactly once.
         /// </summary>
         [Fact]
-        public void CheckForOverload_OverloadPresent_CallsRepositoryNotifyOnce()
+        public void CheckForOverload_OverloadPresent_CallsNotifyServiceOnce()
         {
             // Arrange
             var service = CreateService();
@@ -171,7 +171,7 @@ namespace SmartHomeTests
         /// Test: Checking energy usage below the limit should never call notificationService.SendAlert().
         /// </summary>
         [Fact]
-        public void CheckForOverload_OverloadNotPresent_NeverCallsRepositoryNotify()
+        public void CheckForOverload_OverloadNotPresent_NeverCallsNotifyService()
         {
             // Arrange
             var service = CreateService();
@@ -197,7 +197,7 @@ namespace SmartHomeTests
         /// Test: Checking energy usage equal to the limit should never call notificationService.SendAlert().
         /// </summary>
         [Fact]
-        public void CheckForOverload_OverloadEqualToPowerUsage_NeverCallsRepositoryNotify()
+        public void CheckForOverload_OverloadEqualToPowerUsage_NeverCallsNotifyService()
         {
             // Arrange
             var service = CreateService();
