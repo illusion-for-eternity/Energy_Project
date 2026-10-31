@@ -203,7 +203,7 @@ namespace SmartHomeTests
             var actualCount = devicesList.ToList().Count;
 
             // Assert
-            Assert.True(EXPECTED_DEVICE_COUNT == actualCount);
+            Assert.Equal(EXPECTED_DEVICE_COUNT, actualCount);
         }
 
         /// <summary>

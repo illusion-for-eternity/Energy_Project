@@ -91,7 +91,7 @@ namespace SmartHomeTests
             var actual = service.CalculateCurrentUsageKwh();
 
             // Assert
-            Assert.True(EXPECTED_USAGE == actual);
+            Assert.Equal(EXPECTED_USAGE, actual);
         }
 
         /// <summary>
